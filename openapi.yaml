@@ -1,0 +1,272 @@
+openapi: 3.0.3
+info:
+  title: Final API
+  version: 1.0.0
+  description: Course task tracker
+
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+security:
+  - bearerAuth: []
+
+paths:
+
+  /tasks:
+    get:
+      summary: List tasks
+      description: Returns the list of tasks. Both students and instructors may access.
+      responses:
+        "200":
+          description: Task list response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskListResponse"
+              example:
+                tasks:
+                  - id: task-001
+                    title: Watch Week 6 lecture
+                    course: CS453
+                    studentId: djs001
+                    completed: false
+                  - id: task-002
+                    title: Complete REST API exercise
+                    course: CS453
+                    studentId: djs001
+                    completed: true
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+                
+  /tasks/{id}:
+    get:
+      summary: Get task by ID
+      description: Returns a specific task. Instructors may access any task and students may access their own tasks.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The task ID from the URL path.
+          schema:
+            type: string
+            example: task-001
+      responses:
+        "200":
+          description: Single task response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+              example:
+                id: task-001
+                title: Watch week 6 lecture
+                course: CS453
+                studentId: djs001
+                completed: false
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          description: The task with the provided id was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Task not found
+    delete:
+      summary: Delete the task with the provided ID. Only instructors may access.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The task ID from the URL path.
+          schema:
+            type: string
+            example: task-001
+      responses:
+        "204":
+          description: Task has been deleted.
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        "404":
+          description: The task with the provided id was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Task not found
+  /reports:
+    post:
+      summary: Create a new report
+      responses:
+        "202":
+          description: Report job has been sent to queue.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportResponse"
+              example:
+                jobId: report-17
+                status: pending
+                statusUrl: /reports/report-17
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /reports/{id}:
+    get:
+      summary: Get report by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The report ID from the URL path.
+          schema:
+            type: string
+            example: report-17
+      responses:
+        "200":
+          description: Single report response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Report"
+              example:
+                id: report-17
+                studentId: djs001
+                status: completed
+                downloadUrl: /downloads/report-djs001-report-17.json
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: The report with the provided id was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Not found
+
+
+components:
+  schemas:
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          example: task-001
+        title:
+          type: string
+          example: Watch week 3 lecture
+        course:
+          type: string
+          example: CS553
+        studentId:
+          type: string
+          example: djs001
+        completed:
+          type: boolean
+          example: false
+          description: Indicates whether the task has been completed or not. Internally, this is stored as an integer (0 or 1), but is converted to a boolean when returned.
+      required:
+        - id
+        - title
+        - course
+        - studentId
+        - completed
+
+    Report:
+      type: object
+      properties:
+        id:
+          type: string
+          example: report-17
+        studentId:
+          type: string
+          example: dhs001
+        status:
+          type: string
+          example: completed
+        downloadUrl:
+          type: string
+          nullable: true
+          example: /downloads/report-djs001-report-17.json
+      required:
+        - id
+        - studentId
+        - status
+
+    ReportResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+          example: report-17
+        status: 
+          type: string
+          example: pending
+        statusUrl:
+          type: string
+          example: /reports/report-17
+      required:
+        - jobId
+        - status
+        - statusUrl
+
+    TaskListResponse:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+      required:
+        - tasks
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Enter JWT bearer token in the Authorization header using format `Bearer <token>`.
+
+  responses:
+    UnauthorizedError:
+      description: Unauthorized response for missing, expired, malformed, or invalid tokens.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Unauthorized"
+              message:
+                type: string
+                example: "The token is missing, invalid, expired, or malformed."
+    ForbiddenError:
+      description: Forbidden response for authenticated users who lack permission to perform the task.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Forbidden"
+              message:
+                type: string
+                example: "This action requires one of these roles: instructor."
