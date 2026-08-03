@@ -9,11 +9,11 @@ reportQueue.process(async (message) => {
       "status": "processing"
     });
 
-    const report = await generateReport(studentId);
-    
+    const downloadUrl = await generateReport(studentId);
+
     await db.updateReportJob(jobId, {
       "status": "completed",
-      "downloadUrl": report.downloadUrl
+      "downloadUrl": downloadUrl
     });
   } catch (error) {
     await db.updateReportJob(jobId, {

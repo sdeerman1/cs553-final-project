@@ -40,6 +40,48 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
+    post:
+      summary: Create a new task
+      description: Assume the API reads in the boolean for "completed" and changes it into a 0 or 1 to store in the database.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+            example:
+              title: Watch Week 7 lecture
+              course: CS553
+              studentId: djs001
+              completed: false
+      responses:
+        "200":
+          description: Task has been successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+              example:
+                - id: task-004
+                  title: Watch Week 7 lecture
+                  course: CS553
+                  studentId: djs001
+                  completed: false
+        "400":
+          description: Certain data is missing or incorrect.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid or missing data
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
                 
   /tasks/{id}:
     get:
@@ -66,6 +108,122 @@ paths:
                 course: CS453
                 studentId: djs001
                 completed: false
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          description: The task with the provided id was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Task not found
+    put:
+      summary: Replace the title, course, studentId, and completed status of the task with the provided ID.
+      description: Assume the API reads in the boolean for "completed" and changes it into a 0 or 1 to store in the database.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The task ID from the URL path.
+          schema:
+            type: string
+            example: task-003
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+            example:
+              title: Watch week 7 lecture
+              course: CS553
+              studentId: djs001
+              completed: true
+      responses:
+        "200":
+          description: Task has been successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+              example:
+                - id: task-003
+                  title: Watch week 1 lecture
+                  course: CS553
+                  studentId: djs001
+                  completed: true
+        "400":
+          description: Certain data is missing or incorrect.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid or missing data
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          description: The task with the provided id was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Task not found
+    patch:
+      summary: Replace the title, course, or completed status of the task with the provided ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The task ID from the URL path.
+          schema:
+            type: string
+            example: task-001
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+            example:
+              title: Watch week 7 lecture
+      responses:
+        "200":
+          description: Task has been successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+              example:
+                - id: task-001
+                  title: Watch week 7 lecture
+                  course: CS553
+                  studentId: djs001
+                  completed: false
+        "400":
+          description: Certain data is missing or incorrect.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid or missing data
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":

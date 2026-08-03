@@ -11,7 +11,7 @@ reportsRouter.post('/', authenticateToken, async (req, res, next) => {
     const jobId = randomUUID();
     const studentId = req.user.sub;
     await db.createReportJob({
-      "jobId": jobId, 
+      "id": jobId, 
       "studentId": studentId,
       "status": "pending"
     });
@@ -21,7 +21,7 @@ reportsRouter.post('/', authenticateToken, async (req, res, next) => {
     return res.status(202).json({ 
       "jobId": jobId, 
       "status": "pending", 
-      "statusUrl": "/reports/${jobId}" 
+      "statusUrl": `/reports/${jobId}` 
     });
   } catch (error) {
     return next(error);
