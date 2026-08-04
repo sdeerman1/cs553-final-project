@@ -48,6 +48,9 @@ Queue configuration, OAuth implementation, HTTPS certificate creation, and datab
 
 Do not commit `.env`, generated database files under `data/`, printed tokens, `node_modules`, or coverage output. Run the supplied infrastructure tests with `npm test`.
 
+**The answers to the conceptual questions are located in cs553-final-project/answers.md.**  
+
+
 # Example Test plan
 
 ## Student djs001:
