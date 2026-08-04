@@ -26,11 +26,11 @@ For example, a request can be sent with `curl -H "Authorization: Bearer <token>"
 
 ## File map
 
-| Exam part | Files |
-| --- | --- |
-| Part 3: JWT authentication and roles | `src/middleware/auth.js`, `src/routes/tasks.js` |
-| Part 4: task lookup and ownership | `src/routes/tasks.js`, `src/database.js` |
-| Part 5: report workflow | `src/routes/reports.js`, `src/workers/reportWorker.js`, `src/reportQueue.js`, `src/reportGenerator.js` |
+| Exam part | Files | Updated Files |
+| --- | --- | --- |
+| Part 3: JWT authentication and roles | `src/middleware/auth.js`, `src/routes/tasks.js` | `src/middleware.auth.js`, `src/routes/task.js` |
+| Part 4: task lookup and ownership | `src/routes/tasks.js`, `src/database.js` | `src/routes/task.js`|
+| Part 5: report workflow | `src/routes/reports.js`, `src/workers/reportWorker.js`, `src/reportQueue.js`, `src/reportGenerator.js` | `src/routes/reports.js`, `src/workers/reportWorker.js` |
 
 ## Student TODO checklist
 
@@ -47,3 +47,99 @@ The in-process queue is a small educational stand-in for RabbitMQ, Redis/BullMQ,
 Queue configuration, OAuth implementation, HTTPS certificate creation, and database schema creation are not student responsibilities. The starter uses HTTP locally; any production HTTPS/OpenAPI documentation belongs in the exam response as directed.
 
 Do not commit `.env`, generated database files under `data/`, printed tokens, `node_modules`, or coverage output. Run the supplied infrastructure tests with `npm test`.
+
+# Example Test plan
+
+## Student djs001:
+Return all tasks (GET /tasks):
+```bash
+curl -H "Authorization: Bearer <<TOKEN>>" http://localhost:3000/tasks
+```
+<br><br>
+Return a task by ID (GET /tasks/:id):
+```bash
+curl -X GET http://localhost:3000/tasks/task-001
+-H "Authorization: Bearer <<TOKEN>>"
+```
+<br><br>
+Attempt to delete a task (DELETE /tasks/:id):
+```bash
+curl -X DELETE http://localhost:3000/tasks/task-001
+-H "Authorization: Bearer <<TOKEN>>"
+```
+<br><br>
+Generate a report (POST /reports):
+```bash
+curl -X POST http://localhost:3000/reports
+-H "Authorization: Bearer <<TOKEN>>"
+```
+<br><br>
+Check the status of a report (GET /reports/:jobID):
+```bash
+curl -X GET http://localhost:3000/reports/<<JOBID>>
+-H "Authorization: Bearer <<TOKEN>>"
+```
+<br><br>
+
+## Student student002
+Return all tasks (GET /tasks):
+```bash
+curl -H "Authorization: Bearer <<TOKEN>>" http://localhost:3000/tasks
+```
+<br><br>
+Attempt to return a task by ID (GET /tasks/:id):
+```bash
+curl -X GET http://localhost:3000/tasks/task-001
+-H "Authorization: Bearer <<TOKEN>>"
+```
+<br><br>
+Return a task by ID (GET /tasks/:id):
+```bash
+curl -X GET http://localhost:3000/tasks/task-003
+-H "Authorization: Bearer <<TOKEN>>"
+```
+<br><br>
+Attempt to delete a task (DELETE /tasks/:id):
+```bash
+curl -X DELETE http://localhost:3000/tasks/task-001
+-H "Authorization: Bearer <<TOKEN>>"
+```
+<br><br>
+
+## Instructor instructor001
+Return all tasks (GET /tasks):
+```bash
+curl -H "Authorization: Bearer <<TOKEN>>" http://localhost:3000/tasks
+```
+<br><br>
+Return a task by ID (GET /tasks/:id):
+```bash
+curl -X GET http://localhost:3000/tasks/task-001
+-H "Authorization: Bearer <<TOKEN>>"
+```
+<br><br>
+Return a task by ID (GET /tasks/:id):
+```bash
+curl -X GET http://localhost:3000/tasks/task-003
+-H "Authorization: Bearer <<TOKEN>>"
+```
+<br><br>
+Delete a task (DELETE /tasks/:id):
+```bash
+curl -X DELETE http://localhost:3000/tasks/task-001
+-H "Authorization: Bearer <<TOKEN>>"
+```
+<br><br>
+Generate a report (POST /reports):
+```bash
+curl -X POST http://localhost:3000/reports
+-H "Authorization: Bearer <<TOKEN>>"
+```
+<br><br>
+Check the status of a report (GET /reports/:jobID):
+```bash
+curl -X GET http://localhost:3000/reports/<<JOBID>>
+-H "Authorization: Bearer <<TOKEN>>"
+```
+<br><br>
+
